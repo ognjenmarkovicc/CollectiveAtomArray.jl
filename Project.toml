@@ -1,0 +1,13 @@
+name = "CollectiveAtomArray"
+uuid = "bd9425a5-9156-4273-94e8-1ab7b6a49006"
+authors = ["Ognjen Markovic"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
