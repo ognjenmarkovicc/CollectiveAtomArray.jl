@@ -1,3 +1,4 @@
+import CollectiveSpins as cs
 import CollectiveAtomArray as caa
 
 using Plots
@@ -6,6 +7,8 @@ using LinearAlgebra
 
 # parameters
 N = 2 # number of atoms
+lattice_spacing = 0.1
+dipole = [0., 0., 1.]
 
 # system operators
 h, σ = caa.get_system_operators(N)
@@ -15,16 +18,15 @@ eqs = caa.get_system_eqs(N, order=2)
 # Generate the ODESystem
 @named sys = ODESystem(eqs)
 
-# make a substitution of all J values
-Jval = ones(N, N)
-# set diagonal to 0.
-Jval[diagind(Jval)] .= 0.
+# Generate coupling matrices
+system = cs.SpinCollection(cs.geometry.chain(lattice_spacing, N), 
+                           dipole, 1.) # Γ₀=1.
 
-# make a substitution of all Gamma values
-Γval = ones(N, N)
+Γmat = cs.interaction.GammaMatrix(system)
+Jmat = cs.interaction.OmegaMatrix(system)
 
 # variable replacements
-p = caa.get_param_substitution(Jval, Γval)
+p = caa.get_param_substitution(Jmat, Γmat)
 
 # Create ODEProblem
 
@@ -43,8 +45,7 @@ plot!(graph, sol.t, real.(sol[σ(:e,:e,N)]), label="End of chain", leg=1)
 
 
 # list of the decay operators
-decay_ops = [Γval[i, j]*σ(:e, :g, i)*σ(:g, :e, j) for i=1:N for j=1:N]
-decay_rate = sum([real(sol[op]) for op in decay_ops])
+decay_rate = sum([Γmat[i, j]*real(sol[σ(:e, :g, i)*σ(:g, :e, j)]) for i=1:N for j=1:N])
 
 # Plot decay rate
 graph = plot(sol.t, decay_rate, xlabel="γt", ylabel="Total decay rate")
