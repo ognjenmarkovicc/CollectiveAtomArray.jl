@@ -36,7 +36,7 @@ function get_initial_all_excited(op::Transition)
     if op_is_ee(op)
         return 1.
     else
-        throw(ArgumentError("transition not \\sigma_{ee}"))
+        throw(ArgumentError("$op transition not \\sigma_{ee}"))
     end
 end
 
