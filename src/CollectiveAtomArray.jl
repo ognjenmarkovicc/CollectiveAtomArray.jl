@@ -6,6 +6,8 @@ using LinearAlgebra
 
 using QuantumCumulants: QMul
 
+export get_system_operators, get_system_eqs, get_param_substitution
+
 """
     get_system_operators(N)
     
