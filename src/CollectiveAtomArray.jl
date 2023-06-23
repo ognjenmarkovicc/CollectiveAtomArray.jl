@@ -3,7 +3,7 @@ module CollectiveAtomArray
 using QuantumCumulants
 using ModelingToolkit, OrdinaryDiffEq
 using LinearAlgebra
-
+using Symbolics: substitute, simplify
 using QuantumCumulants: QMul
 
 export get_system_operators, get_system_eqs, get_param_substitution
@@ -75,6 +75,33 @@ Jparam(i, j) = cnumber("J_{$i, $j}")
 
 
 """
+    get_nonzero_operators(N::Integer, order::Integer)
+
+Get operators which are non-zero for the specific
+order of the meanfield equations. This assumes
+that the initial system state is incoherent, with 
+an arbitrary number of excited atoms.
+
+# Arguments
+* `N::Integer`: Number of atoms in the system.
+* `order::Integer`: meanfield equation order
+"""
+function get_nonzero_operators(N::Integer; order::Integer)
+
+    _, σ = get_system_operators(N)
+
+    if order == 2
+        relevant_ops = [σ(:e, :g, i)*σ(:g, :e, j) for i in 1:N for j in 1:N if j>=i]
+        append!(relevant_ops, [σ(:e, :e, i)*σ(:e, :e, j) for i in 1:N for j in 1:N if j>i])
+
+        return relevant_ops 
+    else
+        throw(ArgumentError("order in get_nonzero_operators needs to be 2."))
+    end
+end
+
+
+"""
     get_system_eqs(N::Integer, order::Integer=2)
 
 # Arguments
@@ -102,14 +129,22 @@ function get_system_eqs(N::Integer; order::Integer=2)
     # hermitian conjugates are just the uncorrelated operators
     c_ops_dagg = [σ(:e,:g,j) for j in 1:N]
 
+    relevant_ops = get_nonzero_operators(N, 
+                                         order=order)
+
     # depending on c_ops and zero and non-zero terms
     # we will have different number of operators
-    eqs = meanfield([σ(:e,:e,1)],H,corr_c_ops;
+    eqs = meanfield(relevant_ops,H,corr_c_ops;
                     Jdagger=c_ops_dagg,
                     rates=[1. for i=1:N],
                     order=order)
-    # add the missing, non-specified averages
-    complete!(eqs)
+    # find states which are on the equation rhs
+    missing_states = find_missing(eqs)
+    # set them to 0
+    missing_subs = Dict(missing_states .=> 0)
+
+    eqs = simplify(substitute(eqs, missing_subs))
+
 
     return eqs
 end
