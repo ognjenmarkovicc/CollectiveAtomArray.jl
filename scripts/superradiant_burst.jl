@@ -9,36 +9,22 @@ using LinearAlgebra
 N = 10 # number of atoms
 lattice_spacing = 0.1
 dipole = [0., 0., 1.]
+time_start = 0.0
+time_end = 5.0 
 
-# system operators
-h, σ = caa.get_system_operators(N)
-
-eqs = caa.get_system_eqs(N, order=2)
-
-# Generate the ODESystem
-@named odesys = ODESystem(eqs)
-
-# Generate coupling matrices
 system = cs.SpinCollection(cs.geometry.chain(lattice_spacing, N), 
                            dipole, 1.) # Γ₀=1.
 
-Γmat = cs.interaction.GammaMatrix(system)
-Jmat = cs.interaction.OmegaMatrix(system)
+odesys, u0, param_subs = caa.get_system_ode(system)
 
-# variable replacements
-p = caa.get_param_substitution(Jmat, Γmat)
-
-# Create ODEProblem
-
-# initial state -- all atoms in the excited states
-u0 = convert(Array{ComplexF64}, map(caa.get_initial_all_excited,
-                                    eqs.operators))
-prob = ODEProblem(odesys,u0,(0.0,5.0),p)
+prob = ODEProblem(odesys,u0,(time_start,time_end),param_subs)
 
 # Solve
 sol = solve(prob,RK4())
 
 # Plot
+_, σ = caa.get_system_operators(N)
+Γmat = cs.interaction.GammaMatrix(system)
 
 # plot excitation fraction
 exc_frac = sum([real(sol[σ(:e, :e, i)]) for i=1:N]) 

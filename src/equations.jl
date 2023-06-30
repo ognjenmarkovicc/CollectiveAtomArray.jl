@@ -75,3 +75,33 @@ function get_param_substitution(Jmat::Array{<:AbstractFloat, 2},
     Γflat = [Γparam(i, j) for i=1:Γsize[1] for j=1:Γsize[2]]
     return [Γflat .=> Γmat; Jflat.=>Jmat;]
 end
+
+"""
+    get_param_substitution(system <: SpinCollection)
+
+Get the system odesys (<: ModelingToolkit.AbstractODESystem),
+initial conditions and system parameter substitutions (i.e. Γᵢⱼ -> specific value))
+"""
+function get_system_ode(system::SpinCollection,
+                        order::Integer=2)
+
+    N = length(system.spins)
+
+    eqs = get_system_eqs(N, order=order)
+
+    # Generate the ODESystem
+    @named odesys = ODESystem(eqs)
+
+    Γmat = interaction.GammaMatrix(system)
+    Jmat = interaction.OmegaMatrix(system)
+
+    # variable replacements
+    param_subs = get_param_substitution(Jmat, Γmat)
+
+    # Create ODEProblem
+    # initial state -- all atoms in the excited states
+    u0 = convert(Array{ComplexF64}, map(get_initial_all_excited,
+                                        eqs.operators))
+
+    return odesys, u0, param_subs
+end
