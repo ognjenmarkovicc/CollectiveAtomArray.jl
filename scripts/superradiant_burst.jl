@@ -6,7 +6,7 @@ using ModelingToolkit, OrdinaryDiffEq
 using LinearAlgebra
 
 # parameters
-N = 2 # number of atoms
+N = 10 # number of atoms
 lattice_spacing = 0.1
 dipole = [0., 0., 1.]
 
@@ -16,7 +16,7 @@ h, σ = caa.get_system_operators(N)
 eqs = caa.get_system_eqs(N, order=2)
 
 # Generate the ODESystem
-@named sys = ODESystem(eqs)
+@named odesys = ODESystem(eqs)
 
 # Generate coupling matrices
 system = cs.SpinCollection(cs.geometry.chain(lattice_spacing, N), 
@@ -33,19 +33,24 @@ p = caa.get_param_substitution(Jmat, Γmat)
 # initial state -- all atoms in the excited states
 u0 = convert(Array{ComplexF64}, map(caa.get_initial_all_excited,
                                     eqs.operators))
-prob = ODEProblem(sys,u0,(0.0,5.0),p)
+prob = ODEProblem(odesys,u0,(0.0,5.0),p)
 
 # Solve
 sol = solve(prob,RK4())
 
 # Plot
-graph = plot(sol.t, real.(sol[σ(:e,:e,1)]), label="Excited state in atom 1",
-             xlabel="γt", ylabel="Excited state population")
-plot!(graph, sol.t, real.(sol[σ(:e,:e,N)]), label="End of chain", leg=1)
 
+# plot excitation fraction
+exc_frac = sum([real(sol[σ(:e, :e, i)]) for i=1:N]) 
+
+g1 = plot(sol.t, exc_frac/N, xlabel="γt", ylabel="Excitation fraction")
 
 # list of the decay operators
 decay_rate = sum([Γmat[i, j]*real(sol[σ(:e, :g, i)*σ(:g, :e, j)]) for i=1:N for j=1:N])
 
 # Plot decay rate
-graph = plot(sol.t, decay_rate, xlabel="γt", ylabel="Total decay rate")
+g2 = plot(sol.t, decay_rate/N, 
+          xlabel="γt", ylabel="Decay rate/(N Γ₀)")
+
+g = plot(g1, g2, xscale=:log10, xlim=(1e-2, 5),
+         layout=(2, 1), legend=false)
