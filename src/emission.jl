@@ -12,7 +12,7 @@ Get a unit vector in direction (θ, ϕ)
 * `phi::Real`: Azimuthal angle.
 """
 function direction_vec(theta::Real, phi::Real)
-    return [sin(phi)*sin(theta), cos(phi)*sin(theta), cos(theta)]
+    return [cos(phi)*sin(theta), sin(phi)*sin(theta), cos(theta)]
 end
 
 """
