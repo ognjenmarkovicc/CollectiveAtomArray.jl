@@ -92,7 +92,9 @@ function get_system_ode(system::SpinCollection,
     # Generate the ODESystem
     @named odesys = ODESystem(eqs)
 
-    Γmat = interaction.GammaMatrix(system)
+    # ensure Γmat is real, as it is from definition
+    # e.g. PRR 5, 013091 (2023), Eq. (4)
+    Γmat = real(interaction.GammaMatrix(system))
     Jmat = interaction.OmegaMatrix(system)
 
     # variable replacements
