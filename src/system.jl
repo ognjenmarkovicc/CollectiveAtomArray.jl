@@ -4,6 +4,13 @@ Code for setting up the system operators,
 """
 
 """
+    Base.length(system::SpinCollection)
+    
+Gets the number of spins in a CollectiveSpins.SpinCollection.
+"""
+Base.length(system::SpinCollection) = length(system.spins)
+
+"""
     get_system_hilbert(N::Integer)
     
 Get the Hilbert space for a system of N two-level atoms.
