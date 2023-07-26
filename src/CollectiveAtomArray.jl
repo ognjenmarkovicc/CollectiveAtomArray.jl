@@ -12,7 +12,7 @@ get_param_substitution, get_system_ode, get_emission_factor,
 direction_vec
 
 include("system.jl")
-include("equations.jl")
+include("solution.jl")
 include("emission.jl")
 
 end
