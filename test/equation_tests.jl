@@ -2,7 +2,7 @@
 
     N=2
 
-    h, σ = get_system_operators(N)
+    σ = get_system_sigma(N)
 
     eqs = get_system_eqs(N, order=2)
 
@@ -19,7 +19,7 @@ end
 
     N=3
 
-    h, σ = get_system_operators(N)
+    σ = get_system_sigma(N)
 
     eqs = get_system_eqs(N, order=2)
 

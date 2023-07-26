@@ -4,21 +4,32 @@ Code for setting up the system operators,
 """
 
 """
-    get_system_operators(N)
+    get_system_hilbert(N::Integer)
     
-Get the Hilbert space and the sigma operator
-for a system of N two-level atoms.
+Get the Hilbert space for a system of N two-level atoms.
 """
-function get_system_operators(N)
+function get_system_hilbert(N::Integer)
     # Hilbert space of the N two-level atoms
     # in this case NLevelSpace is a two-level space
     h = ⊗([NLevelSpace(Symbol(:atom, i), (:g, :e)) for i=1:N]...)
 
+    return h
+end
+
+"""
+    get_system_sigma(N::Integer)
+    
+Get the transition (sigma) operator
+for a system of N two-level atoms.
+"""
+function get_system_sigma(N::Integer)
+
+    h = get_system_hilbert(N)
     # operator for the transition from level j to level i for atom k
     # defined as a function
     σ(i,j,k) = Transition(h,Symbol(:σ_,k),i,j,k)
 
-    return h, σ
+    return σ
 end
 
 op_is_ee(op::Transition) = op.i == :e && op.j == :e
@@ -77,7 +88,7 @@ an arbitrary number of excited atoms.
 """
 function get_nonzero_operators(N::Integer; order::Integer)
 
-    _, σ = get_system_operators(N)
+    σ = get_system_sigma(N)
 
     if order == 2
         relevant_ops = [σ(:e, :g, i)*σ(:g, :e, j) for i in 1:N for j in 1:N if j>=i]

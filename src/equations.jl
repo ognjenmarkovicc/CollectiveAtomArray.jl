@@ -23,7 +23,7 @@ function get_system_eqs(N::Integer; order::Integer=2)
 
     # Symbol(:atom, i) results in symbol "atom$(i)$,
     # ie if i=1, then it is atom1
-    h, σ = get_system_operators(N)
+    σ = get_system_sigma(N)
 
     # coherent Hamiltonian  
     H = sum(J[i][j]*σ(:e, :g, i)*σ(:g, :e, j) for i in 1:N for j in 1:N)
