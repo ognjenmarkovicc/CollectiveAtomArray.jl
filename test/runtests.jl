@@ -1,6 +1,7 @@
 using CollectiveAtomArray
 using LinearAlgebra
 using Test
+using CollectiveSpins
 
 @testset "CollectiveAtomArray.jl" begin
     @testset "Equation tests" begin
@@ -8,5 +9,8 @@ using Test
     end
     @testset "Spatial emission tests" begin
         include("emission_tests.jl")
+    end
+    @testset "System tests" begin
+        include("system_tests.jl")
     end
 end
