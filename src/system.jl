@@ -22,6 +22,7 @@ function get_system_hilbert(N::Integer)
 
     return h
 end
+get_system_hilbert(system::SpinCollection) = get_system_hilbert(length(system))
 
 """
     get_system_sigma(N::Integer)
@@ -38,6 +39,7 @@ function get_system_sigma(N::Integer)
 
     return σ
 end
+get_system_sigma(system::SpinCollection) = get_system_sigma(length(system))
 
 op_is_ee(op::Transition) = op.i == :e && op.j == :e
 
