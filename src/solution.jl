@@ -107,3 +107,41 @@ function get_system_ode(system::SpinCollection,
 
     return odesys, u0, param_subs
 end
+
+"""
+    get_mean_excitation(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+
+    Get <σ_iee> for each i ∈ 1:N. Returns a length N vector of vectors,
+    each of length(sol.t).
+"""
+function get_mean_excitation(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+    σ = get_system_sigma(system)
+    return [real(sol[σ(:e, :e, i)]) for i=1:length(system)]
+end
+
+"""
+    get_mean_correlation(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+
+    Get <σ_ieg σ_jge> for each i, j ∈ 1:N. Returns a (N, N) matrix of vectors,
+    each of length(sol.t).
+"""
+function get_mean_correlation(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+    σ = get_system_sigma(system)
+    N = length(system)
+    return [real(sol[σ(:e, :g, i)*σ(:g, :e, j)]) for i=1:N, j=1:N]
+end
+
+"""
+    get_decay_rate(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+
+    Get decay rate from the solution to the excitation dynamics.
+"""
+function get_decay_rate(system::SpinCollection, sol::OrdinaryDiffEq.ODESolution)
+    Γmat = real(interaction.GammaMatrix(system))
+    mean_correlation = get_mean_correlation(system, sol);
+
+    # decay rate is the sum of <σ_ieg σ_jge>
+    # correlations weighted by the Γ matrix
+    # PRR 5, 013091 (2023), Eq. (8)
+    return sum(Γmat.*mean_correlation)
+end
