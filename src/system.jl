@@ -41,6 +41,17 @@ function get_system_sigma(N::Integer)
 end
 get_system_sigma(system::SpinCollection) = get_system_sigma(length(system))
 
+"""
+    get_system_pos(system::SpinCollection)
+    
+Get the system spins position matrix, with shape (3, N),
+where N is the number of spins.
+"""
+function get_system_pos(system::SpinCollection)
+    #shape (3, N) matrix of spin positions
+    return reduce(hcat, map(e -> getfield(e, :position), system.spins))
+end
+
 op_is_ee(op::Transition) = op.i == :e && op.j == :e
 
 """
