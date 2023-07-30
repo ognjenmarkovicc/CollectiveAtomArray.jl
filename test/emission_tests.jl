@@ -19,3 +19,9 @@ end
     @test isapprox(direction_vec(0., 0.), [0., 0., 1.], atol=1e-11)
     @test isapprox(direction_vec(π/2, 0.), [1., 0., 0.], atol=1e-11)
 end
+
+@testset "intensity calculation" begin
+    test_pos = [[0.1, 0, 0] [0.2, 0, 0]]
+    test_compl_factor = Matrix{ComplexF64}([[1, 1] [1, 1]])
+    @test get_compl_factors(0., 0., test_pos) ≈ test_compl_factor
+end
