@@ -6,6 +6,7 @@ replicate Figure 1b, PRR 4, 023207 (2022)
 import CollectiveSpins as cs
 import Statistics as st
 using Plots
+using LinearAlgebra: eigen
 
 dipole = [0., 0., 1.]
 N = 25 # atom number
