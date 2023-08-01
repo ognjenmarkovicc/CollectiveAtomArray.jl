@@ -31,11 +31,11 @@ sol = solve(prob,RK4())
 
 # Plot
 # plot excitation fraction
-exc_frac = sum(get_mean_excitation(system, sol)); 
+exc_frac = sum(caa.get_mean_excitation(system, sol)); 
 
 g1 = plot(sol.t, exc_frac/N, xlabel="γt", ylabel="Excitation fraction");
 
-decay_rate = get_decay_rate(system, sol);
+decay_rate = caa.get_decay_rate(system, sol);
 
 # Plot decay rate
 g2 = plot(sol.t, decay_rate/N, 
