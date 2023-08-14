@@ -43,14 +43,13 @@ function get_system_eqs(N::Integer; order::Integer=2)
     eqs = meanfield(relevant_ops,H,corr_c_ops;
                     Jdagger=c_ops_dagg,
                     rates=[1. for i=1:N],
-                    order=order)
+                    order=order,
+                    simplify=false)
     # find states which are on the equation rhs
     missing_states = find_missing(eqs)
     # set them to 0
     missing_subs = Dict(missing_states .=> 0)
-
-    eqs = simplify(substitute(eqs, missing_subs))
-
+    eqs = substitute(eqs, missing_subs)
 
     return eqs
 end
