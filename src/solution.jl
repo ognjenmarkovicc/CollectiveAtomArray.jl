@@ -76,7 +76,7 @@ function get_param_substitution(Jmat::Array{<:AbstractFloat, 2},
 end
 
 """
-    get_param_substitution(system <: SpinCollection)
+    get_system_ode(system <: SpinCollection, order::Integer=2)
 
 Get the system odesys (<: ModelingToolkit.AbstractODESystem),
 initial conditions and system parameter substitutions (i.e. Γᵢⱼ -> specific value))
