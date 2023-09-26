@@ -88,6 +88,21 @@ function get_system_ode(system::SpinCollection,
 
     eqs = get_system_eqs(N, order=order)
 
+    odesys, u0, param_subs = get_system_ode_from_eqs(eqs, system)
+
+    return odesys, u0, param_subs
+end
+
+"""
+get_system_ode_from_eqs(eqs::QuantumCumulants.MeanfieldEquations,
+    system <: SpinCollection)
+
+Get the system odesys (<: ModelingToolkit.AbstractODESystem)
+from given equations. Only works if the equations are defined
+for the same number of atoms as in the system.
+"""
+function get_system_ode_from_eqs(eqs::QuantumCumulants.MeanfieldEquations,
+                                 system::SpinCollection)
     # Generate the ODESystem
     @named odesys = ODESystem(eqs)
 
