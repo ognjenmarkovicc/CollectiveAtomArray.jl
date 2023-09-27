@@ -25,3 +25,6 @@ Manifest.toml
 
 # 
 *.DS_Store
+
+# ignore jld2 data files
+*.jld2
