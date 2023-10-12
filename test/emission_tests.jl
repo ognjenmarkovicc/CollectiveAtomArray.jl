@@ -24,4 +24,12 @@ end
     test_pos = [[0.1, 0, 0] [0.2, 0, 0]]
     test_compl_factor = Matrix{ComplexF64}([[1, 1] [1, 1]])
     @test get_compl_factors(0., 0., test_pos) ≈ test_compl_factor
+
+    # correlations in an uncorrelated system
+    N=4
+    mean_correlation_test = diagm(ones(4))
+    dipole = normalize([0, 0, 1])
+    system = SpinCollection(geometry.chain(1.0, 4), dipole, 1.)
+    test_emission_factor = get_emission_factor(0.,0.,dipole)
+    @test get_mean_intensity(0.,0.,mean_correlation_test, system)/N ≈ test_emission_factor
 end

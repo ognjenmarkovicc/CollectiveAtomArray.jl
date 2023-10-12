@@ -45,3 +45,31 @@ function get_compl_factors(theta::Real, phi::Real, pos::Matrix{Float64})
     (_, N) = size(pos)
     return [exp(-2*im*π*dot(unit_r, pos[:, i] - pos[:, j])) for i=1:N, j=1:N]
 end
+
+"""
+get_mean_intensity(θ::Float64, ϕ::Float64,
+    mean_correlation::Union{Matrix{Float64}, Matrix{Vector{Float64}}},,
+    system::SpinCollection)
+
+Get the mean intensity radiated in direction (θ,ϕ). mean_correlation can be
+a matrix of numbers of shape (N,N) or a matrix of vectors, where each vector
+represents correlations for different time points.
+
+mean_correlation is returned by get_mean_correlation
+"""
+function get_mean_intensity(θ::Float64, ϕ::Float64,
+    mean_correlation::Union{Matrix{Float64}, Matrix{Vector{Float64}}},
+    system::SpinCollection)
+    # pos: size (3, N) matrix of spin positions
+    pos =  get_system_pos(system)
+
+    # all exp(-kr̂⋅(rᵢ-rⱼ)) factors in a (N, N) matrix
+    compl_factors = get_compl_factors(θ, ϕ, pos)
+
+    # the dipole emission factor
+    # assuming all the atoms have the same polarization
+    dipole = system.polarizations[1]
+    dip_factor = get_emission_factor(θ, ϕ, dipole)
+
+    return dip_factor*sum(compl_factors .* mean_correlation)
+end
