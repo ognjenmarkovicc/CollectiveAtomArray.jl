@@ -32,4 +32,12 @@ end
     system = SpinCollection(geometry.chain(1.0, 4), dipole, 1.)
     test_emission_factor = get_emission_factor(0.,0.,dipole)
     @test get_mean_intensity(0.,0.,mean_correlation_test, system)/N ≈ test_emission_factor
+
+    # test the integral over space of mean intensity
+    function integrand(vars)
+        θ, ϕ = vars
+        return sin(θ)*real(get_mean_intensity(θ, ϕ, mean_correlation_test,system))
+    end
+    result, _ = hcubature(integrand, [0, 0], [π, 2π])
+    @test result ≈ N
 end

@@ -2,6 +2,7 @@ using CollectiveAtomArray
 using LinearAlgebra
 using Test
 using CollectiveSpins
+using Cubature
 
 @testset "CollectiveAtomArray.jl" begin
     @testset "Equation tests" begin
