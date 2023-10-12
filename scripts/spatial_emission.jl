@@ -36,23 +36,14 @@ mean_correlation = caa.get_mean_correlation(system, sol);
 # pos: shape (3, N) matrix of spin positions
 pos =  caa.get_system_pos(system)
 
-ϕ = 0
+ϕ = 0.
 
 thetas = collect(-π/2:0.1:π/2);
 mean_intensity = zeros(ComplexF64, length(thetas), length(sol.t));
 
 for (idx, θ) in enumerate(thetas)
 
-    # unit (θ, ϕ) direction vector r̂
-    unit_r = caa.direction_vec(θ, ϕ)
-
-    # all exp(-kr̂⋅(rᵢ-rⱼ)) factors in a (N, N) matrix
-    compl_factors = caa.get_compl_factors(θ, ϕ, pos)
-
-    # the dipole emission factor
-    dip_factor = caa.get_emission_factor(θ, ϕ, dipole)
-
-    mean_intensity[idx, :] = dip_factor*sum(compl_factors .* mean_correlation)
+    mean_intensity[idx, :] = caa.get_mean_intensity(θ,ϕ,mean_correlation,system)
 
 end
 
